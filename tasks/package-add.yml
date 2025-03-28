@@ -1,0 +1,24 @@
+---
+- name: Become block
+  become: true
+  block:
+    - name: Install tcsh and Red Hat Lightspeed assistant
+      ansible.builtin.command: >-
+        dnf install -y tcsh
+      delegate_to: "{{ _hostname_ }}"
+      register: install_tcsh
+      failed_when: install_tcsh.rc != 0
+
+    - name: Enable copr repository
+      ansible.builtin.command: >-
+        dnf copr enable -y @rhel-lightspeed/command-line-assistant
+      delegate_to: "{{ _hostname_ }}"
+      register: enable_copr
+      failed_when: enable_copr.rc != 0
+
+    - name: Install command-line-assistant
+      ansible.builtin.command: >-
+        dnf install -y command-line-assistant
+      delegate_to: "{{ _hostname_ }}"
+      register: install_cla
+      failed_when: install_cla.rc != 0

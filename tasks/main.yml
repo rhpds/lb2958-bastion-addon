@@ -1,0 +1,6 @@
+---
+
+- name: Include lb2958 tasks
+  when: include_lb2958_role | bool
+  ansible.builtin.include_tasks:
+    file: package-add.yml

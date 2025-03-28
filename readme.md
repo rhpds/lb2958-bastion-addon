@@ -1,3 +1,4 @@
-This is a repo to add additional requirements on bastion.
+
+This role adds additional requirements on bastion.
 
 Currently focused only for lb2958
