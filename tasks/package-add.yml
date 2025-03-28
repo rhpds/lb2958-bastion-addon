@@ -2,6 +2,10 @@
 - name: Become block
   become: true
   block:
+    - name: Set Ansible Python interpreter to k8s virtualenv
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: /usr/libexec/platform-python
+  
     - name: Install tcsh and Red Hat Lightspeed assistant
       ansible.builtin.command: >-
         dnf install -y tcsh
@@ -22,3 +26,7 @@
       delegate_to: "{{ _hostname_ }}"
       register: install_cla
       failed_when: install_cla.rc != 0
+
+    - name: Set Ansible Python interpreter to k8s virtualenv
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python        
