@@ -20,6 +20,7 @@
         rhc connect
         -o {{ lb2958_bastion_addon_org }}
         -a {{ lb2958_bastion_addon_activation_key }}
+      ignore_errors: true        
       delegate_to: "{{ _hostname_ }}"
 
     - name: Set Ansible Python interpreter to k8s virtualenv
