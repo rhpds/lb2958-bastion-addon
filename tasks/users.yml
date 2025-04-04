@@ -1,0 +1,94 @@
+---
+- name: Become block
+  become: true
+  block:
+    - ansible.builtin.user:
+        name: "{{ lb2958_bastion_addon_username }}"
+        group: "{{ lb2958_bastion_addon_group }}"
+        password: "{{ lb2958_bastion_addon_user_password | password_hash('sha512') | default(omit) }}"
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Enable sudo access for the user
+      ansible.builtin.lineinfile:
+        dest: /etc/sudoers.d/90-{{ lb2958_bastion_addon_username }}
+        state: present
+        create: true
+        line: '{{ lb2958_bastion_addon_username }} ALL=(ALL) NOPASSWD: ALL'
+      delegate_to: "{{ _hostname_ }}"
+
+    - when: lb2958_bastion_addon_user_auth_type == "password"
+      block:
+        - name: Remove PasswordAuthentication line from 50-cloud-init.conf
+          ansible.builtin.lineinfile:
+            path: /etc/ssh/sshd_config.d/50-cloud-init.conf
+            regexp: PasswordAuthentication
+            state: absent
+          delegate_to: "{{ _hostname_ }}"
+
+        - name: Enable password ssh authentication
+          ansible.builtin.lineinfile:
+            line: PasswordAuthentication yes
+            regexp: '^ *PasswordAuthentication'
+            path: /etc/ssh/sshd_config
+          delegate_to: "{{ _hostname_ }}"
+
+        - name: Disable root password ssh authentication
+          ansible.builtin.lineinfile:
+            line: PermitRootLogin without-password
+            regexp: '^ *PermitRootLogin'
+            path: /etc/ssh/sshd_config
+          delegate_to: "{{ _hostname_ }}"
+
+        - name: Restart sshd to read conf changes
+          ansible.builtin.service:
+            name: sshd
+            state: restarted
+          delegate_to: "{{ _hostname_ }}"
+
+    - name: Create .ssh directory
+      ansible.builtin.file: 
+        path: /home/{{ lb2958_bastion_addon_username }}/.ssh/
+        state: directory
+        owner: "{{ lb2958_bastion_addon_username }}"
+        group: "{{ lb2958_bastion_addon_group }}"
+        mode: 0700
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Copy the environment .pem key
+      ansible.builtin.copy:
+        src: "{{ hostvars.localhost.ssh_provision_key_path
+              | default(hostvars.localhost.env_authorized_key_path) }}"
+        dest: "/home/{{ lb2958_bastion_addon_username }}/.ssh/{{env_authorized_key}}.pem"
+        owner: "{{ lb2958_bastion_addon_username }}"
+        group: "{{ lb2958_bastion_addon_group }}"
+        mode: 0400
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Copy public key in .ssh/authorized_keys
+      ansible.builtin.copy:
+        content: "{{ hostvars.localhost.ssh_provision_pubkey_content
+          | default(hostvars.localhost.env_authorized_key_content_pub) }}"
+        dest: "/home/{{ lb2958_bastion_addon_username }}/.ssh/{{env_authorized_key}}.pub"
+        owner: "{{ lb2958_bastion_addon_username }}"
+        group: "{{ lb2958_bastion_addon_group }}"
+        mode: 0400
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Create authorized keys
+      ansible.builtin.lineinfile:
+        path: "/home/{{ lb2958_bastion_addon_username }}/.ssh/authorized_keys"
+        line: "{{ hostvars.localhost.ssh_provision_pubkey_content
+              | default(hostvars.localhost.env_authorized_key_content_pub) }}"
+        create: true
+        insertafter: 'EOF'
+        state: present
+        owner: "{{ lb2958_bastion_addon_username }}"
+        group: "{{ lb2958_bastion_addon_group }}"
+        mode: 0400
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Change IdentityFile being used in ssh config
+      ansible.builtin.lineinfile:
+        path: /home/{{ lb2958_bastion_addon_username }}/.ssh/config
+        regexp: '^(.*IdentityFile.*)$'
+        line: "IdentityFile /home/{{ lb2958_bastion_addon_username }}/.ssh/{{env_authorized_key}}.pem"

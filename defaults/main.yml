@@ -5,3 +5,25 @@ include_lb2958_role: true
 # List of Hosts
 #----------------------------------------------------------------
 lb2958_bastion_addon_hosts: "{{ groups['nodes'] }}"
+
+#----------------------------------------------------------------
+# Inject User config/settings
+#----------------------------------------------------------------
+lb2958_bastion_addon_user_config: true
+lb2958_bastion_addon_username: "{{ student_name }}"
+lb2958_bastion_addon_group: "users"
+lb2958_bastion_addon_user_password: "{{ common_password }}"
+
+lb2958_bastion_addon_user_auth_type: ssh # or password
+
+#----------------------------------------------------------------
+# Inject un subscription tasks
+#----------------------------------------------------------------
+lb2958_bastion_addon_unsubscribe: true
+
+#----------------------------------------------------------------
+# Inject Red Hat Insights registration tasks
+#----------------------------------------------------------------
+lb2958_bastion_addon: true
+lb2958_bastion_addon_org: <CHANGEME>
+lb2958_bastion_addon_activation_key: <CHANGEME>
