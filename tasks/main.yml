@@ -3,7 +3,7 @@
   when: additional_nodes_config_injector_user_config | bool
   ansible.builtin.include_tasks:
     file: users.yml
-  loop: "{{ additional_nodes_config_injector_hosts }}"
+  loop: "{{ lb2958_bastion_addon_hosts }}"
   loop_control:
     loop_var: _hostname_
 
