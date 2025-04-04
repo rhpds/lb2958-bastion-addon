@@ -2,6 +2,10 @@
 - name: Become block
   become: true
   block:
+    - name: Set Ansible Python interpreter to k8s virtualenv
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: /usr/libexec/platform-python
+  
     - ansible.builtin.user:
         name: "{{ lb2958_bastion_addon_username }}"
         group: "{{ lb2958_bastion_addon_group }}"
@@ -92,3 +96,7 @@
         path: /home/{{ lb2958_bastion_addon_username }}/.ssh/config
         regexp: '^(.*IdentityFile.*)$'
         line: "IdentityFile /home/{{ lb2958_bastion_addon_username }}/.ssh/{{env_authorized_key}}.pem"
+
+    - name: Set Ansible Python interpreter to k8s virtualenv
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python

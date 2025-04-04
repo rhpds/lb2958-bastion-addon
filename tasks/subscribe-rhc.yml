@@ -25,4 +25,4 @@
 
     - name: Set Ansible Python interpreter to k8s virtualenv
       ansible.builtin.set_fact:
-        ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python        
+        ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python     
