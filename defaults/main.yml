@@ -17,9 +17,9 @@ lb2958_bastion_addon_user_password: "{{ common_password }}"
 lb2958_bastion_addon_user_auth_type: ssh # or password
 
 #----------------------------------------------------------------
-# Inject un subscription tasks
+# Inject subscription tasks
 #----------------------------------------------------------------
-lb2958_bastion_addon_unsubscribe: true
+lb2958_bastion_addon_subscription: true
 
 #----------------------------------------------------------------
 # Inject Red Hat Insights registration tasks
