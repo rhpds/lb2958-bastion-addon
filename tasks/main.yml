@@ -18,7 +18,7 @@
 - name: Include lb2958 subscription task
   when: lb2958_bastion_addon_subscription | bool
   ansible.builtin.include_tasks:
-    file: subscrive-rhc.yml
+    file: subscribe-rhc.yml
   loop: "{{ lb2958_bastion_addon_hosts }}"
   loop_control:
     loop_var: _hostname_
