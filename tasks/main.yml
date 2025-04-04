@@ -1,6 +1,17 @@
 ---
 
-- name: Include lb2958 tasks
+- name: Include lb2958 package addition task
   when: include_lb2958_role | bool
   ansible.builtin.include_tasks:
     file: package-add.yml
+  loop: "{{ lb2958_bastion_addon_hosts }}"
+  loop_control:
+    loop_var: _hostname_
+
+- name: Include lb2958 subscription task
+  when: include_lb2958_role | bool
+  ansible.builtin.include_tasks:
+    file: subscrive-rhc.yml
+  loop: "{{ lb2958_bastion_addon_hosts }}"
+  loop_control:
+    loop_var: _hostname_

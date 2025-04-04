@@ -1,0 +1,27 @@
+---
+- name: Become block
+  become: true
+  block:
+    - name: Set Ansible Python interpreter to k8s virtualenv
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: /usr/libexec/platform-python
+  
+    - name: Unregister From Subscription Manager
+      ansible.builtin.command: subscription-manager unregister
+      register: r_unregister
+      failed_when: >-
+        r_unregister is failed and
+        r_unregister.stderr | default('') != 'This system is currently not registered.'
+      ignore_errors: true
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Register node with Red Hat Insights / RHC
+      ansible.builtin.command: >-
+        rhc connect
+        -o {{ lb2958_bastion_addon_org }}
+        -a {{ lb2958_bastion_addon_activation_key }}
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Set Ansible Python interpreter to k8s virtualenv
+      ansible.builtin.set_fact:
+        ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python        
