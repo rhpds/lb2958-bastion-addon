@@ -27,3 +27,7 @@ lb2958_bastion_addon_subscription: true
 lb2958_bastion_addon: true
 lb2958_bastion_addon_org: <CHANGEME>
 lb2958_bastion_addon_activation_key: <CHANGEME>
+
+# To print agnosticd_user_info with additional node1 details or not
+lb2958_bastion_addon_agnosticd_user_info: true
+lb2958_bastion_addon_num_users: 1

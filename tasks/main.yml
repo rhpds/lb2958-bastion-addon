@@ -22,3 +22,16 @@
   loop: "{{ lb2958_bastion_addon_hosts }}"
   loop_control:
     loop_var: _hostname_
+
+- name: Save code server information for each user
+  agnosticd_user_info:
+    user: "{{ user }}{{ n }}"
+    data:
+      node: "node1.{{ guid}}.{{subdomain_base_suffix}}"
+      node1_username: "{{ lb2958_bastion_addon_username }}"
+      node1_password: "{{ lb2958_bastion_addon_user_password }}"
+  loop: "{{ range(1, 1 + lb2958_bastion_addon_num_users | int) | list }}"
+  loop_control:
+    loop_var: n
+    label: "{{ user }}{{ n }}"
+  when: lb2958_bastion_addon_agnosticd_user_info | bool   
