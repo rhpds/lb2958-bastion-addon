@@ -23,7 +23,7 @@
   loop_control:
     loop_var: _hostname_
 
-- name: Save code server information for each user
+- name: Save node1 info
   agnosticd_user_info:
     user: "user{{ n }}"
     data:
