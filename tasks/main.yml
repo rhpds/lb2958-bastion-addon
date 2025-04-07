@@ -26,7 +26,7 @@
 - name: Save node1 info
   agnosticd_user_info:
     data:
-      node: "node1.{{ guid}}.{{subdomain_base_suffix}}"
+      node1_public_hostname: "node1.{{ guid}}{{subdomain_base_suffix}}"
       node1_username: "{{ lb2958_bastion_addon_username }}"
       node1_password: "{{ lb2958_bastion_addon_user_password }}"
   when: lb2958_bastion_addon_agnosticd_user_info | bool   
