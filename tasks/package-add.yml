@@ -22,11 +22,58 @@
 
     - name: Install command-line-assistant
       ansible.builtin.command: >-
-        dnf install -y command-line-assistant
+        dnf install -y httpd
       register: install_cla
       failed_when: install_cla.rc != 0
       delegate_to: "{{ _hostname_ }}"
+      
+    - name: Install httpd
+      ansible.builtin.command: >-
+        dnf install -y httpd
+      register: install_httpd
+      failed_when: install_httpd.rc != 0
+      delegate_to: "{{ _hostname_ }}"
 
+    - name: Install firewalld
+      ansible.builtin.command: >-
+        dnf install -y firewalld
+      register: install_firewalld
+      failed_when: install_firewalld.rc != 0
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Enable and start firewalld service
+      ansible.builtin.service:
+        name: firewalld
+        enabled: yes
+        state: started
+      register: start_firewalld
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Allow HTTP traffic through firewalld
+      ansible.builtin.firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+        immediate: yes
+      register: allow_http
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Allow HTTPS traffic through firewalld
+      ansible.builtin.firewalld:
+        service: https
+        permanent: yes
+        state: enabled
+        immediate: yes
+      register: allow_https
+      delegate_to: "{{ _hostname_ }}"
+
+    - name: Reload firewalld to apply changes
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
+      register: reload_firewalld
+      delegate_to: "{{ _hostname_ }}"
+    
     - name: Set Ansible Python interpreter to k8s virtualenv
       ansible.builtin.set_fact:
         ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python
