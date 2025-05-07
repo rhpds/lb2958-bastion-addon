@@ -113,6 +113,14 @@
       when: users_file.stat.exists
       delegate_to: "{{ _hostname_ }}"
 
+    - name: Set permissions for users.csv
+      ansible.builtin.file:
+        path: ~/users.csv
+        mode: '0644'
+        owner: "{{ lb2958_bastion_addon_username }}"  # Or specify a username
+        group: "{{ lb2958_bastion_addon_group }}"
+      delegate_to: "{{ _hostname_ }}"
+
     - name: Set Ansible Python interpreter to k8s virtualenv
       ansible.builtin.set_fact:
         ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python
