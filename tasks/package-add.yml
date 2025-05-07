@@ -91,8 +91,7 @@
     - name: Clone gist and move users.csv to home directory
       ansible.builtin.shell: |
         git clone https://gist.github.com/1c8afb3087be6e4ec8f1df0a5e50124d.git /tmp/users_gist &&
-        mv /tmp/users_gist/users.csv ~/users.csv &&
-        rm -rf /tmp/users_gist
+        mv /tmp/users_gist/users.csv ~/users.csv
       args:
         executable: /bin/bash
       register: clone_gist
