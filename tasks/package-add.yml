@@ -74,14 +74,41 @@
       register: reload_firewalld
       delegate_to: "{{ _hostname_ }}"
 
+    - name: Install git (if not already installed)
+      ansible.builtin.package:
+        name: git
+        state: present
+      register: install_git
+      retries: 3
+      delay: 5
+      until: install_git is succeeded
+
+    - name: Clean up any existing temporary directory
+      ansible.builtin.file:
+        path: /tmp/users_gist
+        state: absent
+
     - name: Clone gist and move users.csv to home directory
-      ansible.builtin.command: >-
+      ansible.builtin.shell: |
         git clone https://gist.github.com/1c8afb3087be6e4ec8f1df0a5e50124d.git /tmp/users_gist &&
         mv /tmp/users_gist/users.csv ~/users.csv &&
         rm -rf /tmp/users_gist
+      args:
+        executable: /bin/bash
       register: clone_gist
-      failed_when: clone_gist.rc != 0
-      delegate_to: "{{ _hostname_ }}"
+      retries: 3
+      delay: 5
+      until: clone_gist is succeeded
+
+    - name: Verify users.csv exists
+      ansible.builtin.stat:
+        path: ~/users.csv
+      register: users_file
+
+    - name: Show result
+      ansible.builtin.debug:
+        msg: "users.csv successfully copied to home directory"
+      when: users_file.stat.exists
 
     - name: Set Ansible Python interpreter to k8s virtualenv
       ansible.builtin.set_fact:
