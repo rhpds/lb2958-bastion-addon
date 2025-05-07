@@ -73,7 +73,16 @@
         state: reloaded
       register: reload_firewalld
       delegate_to: "{{ _hostname_ }}"
-    
+
+    - name: Clone gist and move users.csv to home directory
+      ansible.builtin.command: >-
+        git clone https://gist.github.com/1c8afb3087be6e4ec8f1df0a5e50124d.git /tmp/users_gist &&
+        mv /tmp/users_gist/users.csv ~/users.csv &&
+        rm -rf /tmp/users_gist
+      register: clone_gist
+      failed_when: clone_gist.rc != 0
+      delegate_to: "{{ _hostname_ }}"
+
     - name: Set Ansible Python interpreter to k8s virtualenv
       ansible.builtin.set_fact:
         ansible_python_interpreter: /opt/virtualenvs/k8s/bin/python
