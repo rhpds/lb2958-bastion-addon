@@ -82,11 +82,13 @@
       retries: 3
       delay: 5
       until: install_git is succeeded
+      delegate_to: "{{ _hostname_ }}"
 
     - name: Clean up any existing temporary directory
       ansible.builtin.file:
         path: /tmp/users_gist
         state: absent
+      delegate_to: "{{ _hostname_ }}"
 
     - name: Clone gist and move users.csv to home directory
       ansible.builtin.shell: |
@@ -98,16 +100,19 @@
       retries: 3
       delay: 5
       until: clone_gist is succeeded
+      delegate_to: "{{ _hostname_ }}"
 
     - name: Verify users.csv exists
       ansible.builtin.stat:
         path: ~/users.csv
       register: users_file
+      delegate_to: "{{ _hostname_ }}"
 
     - name: Show result
       ansible.builtin.debug:
         msg: "users.csv successfully copied to home directory"
       when: users_file.stat.exists
+      delegate_to: "{{ _hostname_ }}"
 
     - name: Set Ansible Python interpreter to k8s virtualenv
       ansible.builtin.set_fact:
