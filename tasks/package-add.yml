@@ -92,7 +92,7 @@
     - name: Clone gist and move users.csv to home directory
       ansible.builtin.shell: |
         git clone https://gist.github.com/1c8afb3087be6e4ec8f1df0a5e50124d.git ~/users_gist &&
-        cp ~/users_gist/users.csv ~/users.csv
+        cp ~/users_gist/users.csv "/home/{{ lb2958_bastion_addon_username }}/users.csv"
       args:
         executable: /bin/bash
       register: clone_gist
@@ -103,7 +103,7 @@
 
     - name: Verify users.csv exists
       ansible.builtin.stat:
-        path: ~/users.csv
+        path: "/home/{{ lb2958_bastion_addon_username }}/users.csv"
       register: users_file
       delegate_to: "{{ _hostname_ }}"
 
@@ -115,7 +115,7 @@
 
     - name: Set permissions for users.csv
       ansible.builtin.file:
-        path: ~/users.csv
+        path: "/home/{{ lb2958_bastion_addon_username }}/users.csv"
         mode: '0644'
         owner: "{{ lb2958_bastion_addon_username }}"  # Or specify a username
         group: "{{ lb2958_bastion_addon_group }}"
