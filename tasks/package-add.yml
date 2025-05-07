@@ -74,14 +74,13 @@
       register: reload_firewalld
       delegate_to: "{{ _hostname_ }}"
 
-    - name: Install git (if not already installed)
-      ansible.builtin.package:
-        name: git
-        state: present
+    - name: Install git using direct dnf command
+      ansible.builtin.command: >-
+        dnf install -y git
       register: install_git
       retries: 3
       delay: 5
-      until: install_git is succeeded
+      until: install_git.rc == 0
       delegate_to: "{{ _hostname_ }}"
 
     - name: Clean up any existing temporary directory
